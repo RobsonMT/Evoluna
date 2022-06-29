@@ -106,7 +106,7 @@ export const StepTwo = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              onClick={() => history.push("/step2")}
+              onClick={() => history.push("/step3")}
             >
               CONTINUAR
               <ChevronRightIcon
