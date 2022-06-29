@@ -1,5 +1,10 @@
+import { MotionContainer } from "../components/MotionContainer";
 import { Heading } from "@chakra-ui/react";
 
 export const StepTwo = () => {
-  return <Heading>StepOne</Heading>;
+  return (
+    <MotionContainer>
+      <Heading>StepOne</Heading>
+    </MotionContainer>
+  );
 };
