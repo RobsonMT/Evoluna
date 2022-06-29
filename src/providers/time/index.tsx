@@ -1,32 +1,63 @@
-import { createContext, useCallback, useContext, useState } from "react";
-import { IChildren } from "../../interfaces";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { IChildren, ITime, ITimeQuery } from "../../interfaces";
 import { api } from "../../services/api";
 
-interface ITime {}
-
-interface ITimeState {}
-
-interface TimeContextData {
-  times: any;
+interface ITimeContext {
+  times: ITime[];
+  searchedTimes: ITime[];
+  searchTimes: (query: ITimeQuery) => Promise<void>;
 }
 
-const TimeContext = createContext<TimeContextData>({} as TimeContextData);
+const TimeContext = createContext<ITimeContext>({} as ITimeContext);
 
-const useTime = () => useContext(TimeContext);
+const useTime = () => {
+  const context = useContext(TimeContext);
+
+  if (!context) {
+    throw new Error("useTime must be used within an useTimeProvider");
+  }
+
+  return context;
+};
 
 const TimeProvider = ({ children }: IChildren) => {
-  const [times, setTimes] = useState<ITimeState>();
+  const [times, setTimes] = useState<ITime[]>([]);
+  const [searchedTimes, setSearchedTimes] = useState<ITime[]>([]);
 
   const getTimes = useCallback(async () => {
-    await api.get("/times");
+    try {
+      const response = await api.get("/times");
+      setTimes(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
-  const searchTimes = useCallback(async (prof: string, day: string) => {
-    await api.get(`/times/search?prof=${prof}&day=${day}`);
+  const searchTimes = useCallback(async ({ prof, day }: ITimeQuery) => {
+    try {
+      const response = await api.get(`/times/search?prof=${prof}&day=${day}`);
+      setSearchedTimes(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
+
+  useEffect(() => {
+    getTimes();
+  }, []);
+
+  console.log(times);
 
   return (
-    <TimeContext.Provider value={{ times }}>{children}</TimeContext.Provider>
+    <TimeContext.Provider value={{ times, searchedTimes, searchTimes }}>
+      {children}
+    </TimeContext.Provider>
   );
 };
 

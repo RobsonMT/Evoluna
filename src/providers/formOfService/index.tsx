@@ -1,27 +1,51 @@
-import { createContext, useCallback, useContext, useState } from "react";
-import { IChildren } from "../../interfaces";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { IChildren, IFormOfService } from "../../interfaces";
 import { api } from "../../services/api";
 
-interface IFormOfService {}
-
-interface IFormOfServiceState {}
-
-interface FormOfServiceContextData {
-  formsOfService: any;
+interface IFormOfServiceContext {
+  formsOfService: IFormOfService[];
 }
 
-const FormOfServiceContext = createContext<FormOfServiceContextData>(
-  {} as FormOfServiceContextData
+const FormOfServiceContext = createContext<IFormOfServiceContext>(
+  {} as IFormOfServiceContext
 );
 
-const useFormOfService = () => useContext(FormOfServiceContext);
+const useFormOfService = () => {
+  const context = useContext(FormOfServiceContext);
+
+  if (!context) {
+    throw new Error(
+      "useFormOfService must be used within an useFormOfServiceProvider"
+    );
+  }
+
+  return context;
+};
 
 const FormOfServiceProvider = ({ children }: IChildren) => {
-  const [formsOfService, setFormsOfService] = useState<IFormOfServiceState>();
+  const [formsOfService, setFormsOfService] = useState<IFormOfService[]>([]);
 
   const getFormsOfService = useCallback(async () => {
-    await api.get("/formsOfService");
+    try {
+      const response = await api.get("/formsOfService");
+
+      setFormsOfService(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
+
+  useEffect(() => {
+    getFormsOfService();
+  }, []);
+
+  console.log(formsOfService);
 
   return (
     <FormOfServiceContext.Provider value={{ formsOfService }}>

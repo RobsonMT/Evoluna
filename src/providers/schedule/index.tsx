@@ -1,33 +1,35 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext } from "react";
 import { IChildren } from "../../interfaces";
 import { api } from "../../services/api";
+import { ICreateSchedule } from "../../interfaces";
 
-interface ISchedule {}
-
-interface IScheduleState {}
-
-interface ScheduleContextData {
-  schedule: any;
-  addSchedule: (data: ISchedule) => Promise<void>;
+interface IScheduleContext {
+  addSchedule: (data: ICreateSchedule) => Promise<void>;
 }
 
-const ScheduleContext = createContext<ScheduleContextData>(
-  {} as ScheduleContextData
-);
+const ScheduleContext = createContext<IScheduleContext>({} as IScheduleContext);
 
-const useSchedule = () => useContext(ScheduleContext);
+const useSchedule = () => {
+  const context = useContext(ScheduleContext);
+
+  if (!context) {
+    throw new Error("useSchedule must be used within an useScheduleProvider");
+  }
+
+  return context;
+};
 
 const ScheduleProvider = ({ children }: IChildren) => {
-  const [schedule, setSchedule] = useState<IScheduleState>();
-
-  const addSchedule = useCallback(async (data: any) => {
-    await api.post("/schedule", {
-      data,
-    });
+  const addSchedule = useCallback(async (data: ICreateSchedule) => {
+    try {
+      await api.post("/schedule", { data });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
-    <ScheduleContext.Provider value={{ schedule, addSchedule }}>
+    <ScheduleContext.Provider value={{ addSchedule }}>
       {children}
     </ScheduleContext.Provider>
   );

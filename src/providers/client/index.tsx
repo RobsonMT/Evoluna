@@ -1,31 +1,34 @@
-import { createContext, useCallback, useContext, useState } from "react";
-import { IChildren } from "../../interfaces";
+import { createContext, useCallback, useContext } from "react";
+import { IChildren, ICreateClient } from "../../interfaces";
 import { api } from "../../services/api";
 
-interface IClient {}
-
-interface IClientState {}
-
-interface ClientContextData {
-  client: any;
-  addClient: (data: IClient) => Promise<void>;
+interface IClientContext {
+  addClient: (data: ICreateClient) => Promise<void>;
 }
 
-const ClientContext = createContext<ClientContextData>({} as ClientContextData);
+const ClientContext = createContext<IClientContext>({} as IClientContext);
 
-const useClient = () => useContext(ClientContext);
+const useClient = () => {
+  const context = useContext(ClientContext);
+
+  if (!context) {
+    throw new Error("useClient must be used within an useClientProvider");
+  }
+
+  return context;
+};
 
 const ClientProvider = ({ children }: IChildren) => {
-  const [client, setClient] = useState<IClientState>();
-
-  const addClient = useCallback(async (data: any) => {
-    await api.post("/client", {
-      data,
-    });
+  const addClient = useCallback(async (data: ICreateClient) => {
+    try {
+      await api.post("/client", { data });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
-    <ClientContext.Provider value={{ client, addClient }}>
+    <ClientContext.Provider value={{ addClient }}>
       {children}
     </ClientContext.Provider>
   );

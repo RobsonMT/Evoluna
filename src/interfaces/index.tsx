@@ -50,3 +50,11 @@ export interface ICreateClient {
   birthCity: string;
   lastBirthdayCity: string;
 }
+
+export interface ICreateSchedule {
+  day: string;
+  formOfServiceId: string;
+  timeId: string;
+  professionalId: string;
+  clientId: string;
+}

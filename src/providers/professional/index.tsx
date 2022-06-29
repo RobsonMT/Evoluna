@@ -1,26 +1,50 @@
-import { createContext, useCallback, useContext, useState } from "react";
-import { string } from "yup/lib/locale";
-import { IChildren } from "../../interfaces";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { IChildren, IProfessional } from "../../interfaces";
 import { api } from "../../services/api";
 
-interface IProfessionalState {}
-
-interface ProfessionalContextData {
-  professionals: any;
+interface IProfessionalContext {
+  professionals: IProfessional[];
 }
 
-const ProfessionalContext = createContext<ProfessionalContextData>(
-  {} as ProfessionalContextData
+const ProfessionalContext = createContext<IProfessionalContext>(
+  {} as IProfessionalContext
 );
 
-const useProfessional = () => useContext(ProfessionalContext);
+const useProfessional = () => {
+  const context = useContext(ProfessionalContext);
+
+  if (!context) {
+    throw new Error(
+      "useProfessional must be used within an useProfessionalProvider"
+    );
+  }
+
+  return context;
+};
 
 const ProfessionalProvider = ({ children }: IChildren) => {
-  const [professionals, setProfessionals] = useState<IProfessionalState>();
+  const [professionals, setProfessionals] = useState<IProfessional[]>([]);
 
   const getProfessionals = useCallback(async () => {
-    await api.get("/professional");
+    try {
+      const response = await api.get("/professionals");
+      setProfessionals(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
+
+  useEffect(() => {
+    getProfessionals();
+  }, []);
+
+  console.log(professionals);
 
   return (
     <ProfessionalContext.Provider value={{ professionals }}>
