@@ -6,15 +6,21 @@ type OptionType = {
 };
 
 interface IInputSelectProps {
+  placeholder?: string;
   options: OptionType[];
   setState: (value: string) => void;
 }
 
-export const InputSelect = ({ setState, options }: IInputSelectProps) => {
+export const InputSelect = ({
+  placeholder,
+  options,
+  setState,
+}: IInputSelectProps) => {
   return (
     <Select
       colorScheme="purple"
       options={options}
+      placeholder={placeholder ?? "Selecione"}
       onChange={(e) => setState(e!.value)}
     />
   );
