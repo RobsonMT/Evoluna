@@ -1,21 +1,8 @@
 import { MotionContainer } from "../components/MotionContainer";
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Grid,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Grid } from "@chakra-ui/react";
 // import { useEffect, useState } from "react";
-import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
-import { theme } from "../styles/theme";
-import { Select } from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
 import { Steps } from "../components/Steps";
+import { Header } from "../components/Header";
 
 export const StepOne = () => {
   // const [state, setState] = useState("");
@@ -31,6 +18,7 @@ export const StepOne = () => {
 
   return (
     <MotionContainer>
+      <Header />
       <Grid minH="100vh" justifyItems="center" alignItems="center">
         <Steps />
       </Grid>
