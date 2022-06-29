@@ -152,10 +152,13 @@ export const StepThree = () => {
                 />
               </Box>
               <Box>
+                <Text>
+                  Cidade e estado onde estav no ultimo aniversário ou que stará
+                  no próximo se estiver perto da data do aniversário
+                </Text>
                 <Input
                   placeholder="ex: São Paulo - SP"
                   type="text"
-                  label="Cidade e estado onde estav no ultimo aniversário ou que stará no próximo se estiver perto da data do aniversário"
                   error={errors.name}
                   {...register("name")}
                 />

@@ -1,8 +1,7 @@
 import { createContext, useCallback, useContext, useState } from "react";
+import { string } from "yup/lib/locale";
 import { IChildren } from "../../interfaces";
 import { api } from "../../services/api";
-
-interface IProfessional {}
 
 interface IProfessionalState {}
 

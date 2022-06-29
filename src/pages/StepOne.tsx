@@ -15,17 +15,6 @@ import { theme } from "../styles/theme";
 import { useHistory } from "react-router-dom";
 
 export const StepOne = () => {
-  // const [state, setState] = useState("");
-  // const options = [
-  //   { label: "Green", value: "green" },
-  //   { label: "Green-Yellow", value: "greenyellow" },
-  //   { label: "Red", value: "red" },
-  // ];
-
-  // useEffect(() => {
-  //   console.log("state", state);
-  // });
-
   const history = useHistory();
 
   return (
