@@ -20,8 +20,8 @@ export const theme = extendTheme({
     blue: { 50: "rgb(4, 191, 217)", 800: "rgb(0, 68, 149)" }
   },
   fonts: {
-    heading: "'Roboto', san-serif",
-    body: "'Roboto', san-serif",
+    // heading: "'Roboto', san-serif",
+    // body: "'Roboto', san-serif",
   },
   fontSizes: {
     xs: ".75rem",

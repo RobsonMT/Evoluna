@@ -1,4 +1,3 @@
-import { MotionContainer } from "../components/MotionContainer";
 import {
   Box,
   Button,
@@ -8,11 +7,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-// import { useEffect, useState } from "react";
+import { MotionContainer } from "../components/MotionContainer";
 import { Steps } from "../components/Steps";
 import { Header } from "../components/Header";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { theme } from "../styles/theme";
+import { useHistory } from "react-router-dom";
 
 export const StepOne = () => {
   // const [state, setState] = useState("");
@@ -25,6 +25,8 @@ export const StepOne = () => {
   // useEffect(() => {
   //   console.log("state", state);
   // });
+
+  const history = useHistory();
 
   return (
     <MotionContainer>
@@ -101,6 +103,7 @@ export const StepOne = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
+              onClick={() => history.push("/step2")}
             >
               CONTINUAR
               <ChevronRightIcon
