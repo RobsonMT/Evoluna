@@ -13,9 +13,70 @@ import { Header } from "../components/Header";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { theme } from "../styles/theme";
 import { useHistory } from "react-router-dom";
+import { useFormOfService } from "../providers/formOfService";
+import { useProfessional } from "../providers/professional";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Input } from "../components/Input";
+import { useClient } from "../providers/client";
+import { useEffect } from "react";
+import { useSchedule } from "../providers/schedule";
+
+interface IStepOneData {
+  email: string;
+  formOfServiceId: string;
+  professionalId: string;
+}
+
+const emailSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("E-mail inválido")
+    .required("E-mail obrigatório. Ex: nome@email.com."),
+  formOfServiceId: yup.string().required(),
+  professionalId: yup.string().required(),
+});
 
 export const StepOne = () => {
   const history = useHistory();
+
+  // const { times, searchedTimes } = useTime();
+  const { clientState, setClientState } = useClient();
+  const { scheduleState, setScheduleState } = useSchedule();
+  const { formsOfService } = useFormOfService();
+  const { professionals } = useProfessional();
+
+  const {
+    formState: { errors },
+    register,
+    handleSubmit,
+    reset,
+  } = useForm<IStepOneData>({
+    resolver: yupResolver(emailSchema),
+  });
+
+  const handleStepOne = ({
+    email,
+    formOfServiceId,
+    professionalId,
+  }: IStepOneData) => {
+    if (email && professionalId && formOfServiceId) {
+      setClientState((prev) => ({ ...prev, email: email }));
+      setScheduleState((prev) => ({
+        ...prev,
+        formOfServiceId: formOfServiceId,
+        professionalId: professionalId,
+      }));
+      reset();
+
+      return history.push("/stepTwo");
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log(clientState, "atualizando");
+  // });
 
   return (
     <MotionContainer>
@@ -23,6 +84,8 @@ export const StepOne = () => {
       <Grid minH="100vh" justifyItems="center" alignItems="center">
         <Steps />
         <Flex
+          as="form"
+          onSubmit={handleSubmit(handleStepOne)}
           flexDir="column"
           gap="20px"
           marginTop="20px"
@@ -35,51 +98,55 @@ export const StepOne = () => {
               Você escolheu:
             </Text>
             <Select
-              placeholder="Digite aqui o email"
+              placeholder="Selecione o profissional"
               textAlign="center"
+              fontSize={["sm", "md"]}
               bg="whitesmoke"
               h="30px"
               borderRadius="15px"
               color="pink"
+              {...register("professionalId")}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {professionals.map((item, key) => (
+                <option key={key} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
             </Select>
           </Box>
           <Box>
             <Text fontSize="sm" fontWeight="bold" textAlign="center">
               Formato do atendimento
             </Text>
+
             <Select
-              placeholder="Digite aqui o email"
+              placeholder="Selecione a forma de atendimento"
               textAlign="center"
+              fontSize={["sm", "md"]}
               bg="whitesmoke"
               h="30px"
               borderRadius="15px"
               color="pink"
+              {...register("formOfServiceId")}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {formsOfService.map((item, key) => (
+                <option key={key} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
             </Select>
           </Box>
-          <Box>
+          <Box textAlign="center">
             <Text fontSize="sm" fontWeight="bold" textAlign="center">
               Insira o e-mail utilizado na compra
             </Text>
-            <Select
-              placeholder="Digite aqui o email"
-              textAlign="center"
-              bg="whitesmoke"
-              h="30px"
-              borderRadius="15px"
-              color="pink"
-            >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
+            <Input
+              placeholder="Digite aqui o e-mail"
+              _placeholder={{ textAlign: "center" }}
+              type="email"
+              error={errors.email}
+              {...register("email")}
+            />
           </Box>
           <VStack>
             <Button
@@ -92,7 +159,10 @@ export const StepOne = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              onClick={() => history.push("/step2")}
+              transition="filter .1s linear "
+              _hover={{ filter: "brightness(.9)" }}
+              _active={{ filter: "brightness(1.1)" }}
+              type="submit"
             >
               CONTINUAR
               <ChevronRightIcon
@@ -111,6 +181,9 @@ export const StepOne = () => {
               color="gray.200"
               h="30px"
               p="5px 30px"
+              transition="filter .1s linear "
+              _hover={{ filter: "brightness(.9)" }}
+              _active={{ filter: "brightness(1.1)" }}
             >
               ALTERAR
             </Button>

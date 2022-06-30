@@ -45,7 +45,7 @@ const FormOfServiceProvider = ({ children }: IChildren) => {
     getFormsOfService();
   }, []);
 
-  console.log(formsOfService);
+  // console.log(formsOfService);
 
   return (
     <FormOfServiceContext.Provider value={{ formsOfService }}>

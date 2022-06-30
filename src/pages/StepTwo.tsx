@@ -1,5 +1,3 @@
-import { MotionContainer } from "../components/MotionContainer";
-import { Header } from "../components/Header";
 import {
   Button,
   Flex,
@@ -9,14 +7,72 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { MotionContainer } from "../components/MotionContainer";
+import { Header } from "../components/Header";
 import { Steps } from "../components/Steps";
 import { DatePicker } from "chakra-ui-date-input";
 import { theme } from "../styles/theme";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
+import { useFormOfService } from "../providers/formOfService";
+import { useClient } from "../providers/client";
+import { useProfessional } from "../providers/professional";
+import { useSchedule } from "../providers/schedule";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useTime } from "../providers/time";
+import { ITime } from "../interfaces";
+
+interface IStepTwoData {
+  day: string;
+  profId: string;
+}
 
 export const StepTwo = () => {
+  const [day, setDay] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<ITime>({
+    id: "",
+    duration: "",
+  });
+
   const history = useHistory();
+
+  const { times, searchTimes } = useTime();
+  const { clientState, setClientState } = useClient();
+  const { scheduleState, setScheduleState } = useSchedule();
+  const { formsOfService } = useFormOfService();
+  const { professionals } = useProfessional();
+
+  const handleSearch = (data: string) => {
+    const searchData = { day: data, profId: scheduleState.professionalId };
+    searchTimes(searchData).then(() => setDay(data));
+  };
+
+  const handleSelectedTime = (time: ITime) => {
+    if (time.isSchedule && time.isSchedule) {
+      setSelectedTime(time);
+    }
+  };
+
+  const handleSteTwo = () => {
+    if (day && selectedTime.id) {
+      setScheduleState((prev) => ({
+        ...prev,
+        day: day,
+        timeId: selectedTime.id,
+      }));
+
+      history.push("/stepThree");
+    }
+  };
+
+  useEffect(() => {
+    console.log(day);
+    console.log(searchTimes, "searchTimes");
+    console.log(times, "times");
+    console.log(scheduleState, "scheduleState atual");
+  });
+
   return (
     <MotionContainer>
       <Header />
@@ -38,8 +94,10 @@ export const StepTwo = () => {
           <DatePicker
             placeholder="Date picker placeholder"
             name="date"
-            onChange={(date: string) => console.log(date)}
+            onChange={(date: string) => handleSearch(date)}
             textAlign="center"
+            color="whitesmoke"
+            fontWeight="bold"
           />
 
           <Flex flexDir="column" bg="white" borderRadius="5px" p="10px">
@@ -53,14 +111,14 @@ export const StepTwo = () => {
             </Heading>
 
             <Grid
-              // border="2px solid black"
+              border="2px solid black"
               gap="20px"
               padding={["5px, 5px", "5px 10px", "5px 10px"]}
               gridTemplateColumns={["repeat(auto-fill, minmax(100px, 1fr))"]}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, index) => (
+              {times.map((time, key) => (
                 <GridItem
-                  key={index}
+                  key={key}
                   border={`1px solid ${theme.colors.purple[800]}`}
                   borderRadius="5px"
                   p="5px"
@@ -68,8 +126,27 @@ export const StepTwo = () => {
                   textAlign="center"
                   fontWeight="bold"
                   boxShadow="md"
+                  transition="filter .4s linear "
+                  onClick={() => handleSelectedTime(time)}
+                  opacity={time.isSchedule && time.isSchedule ? "1" : "0.7"}
+                  bg={
+                    time.isSchedule && time.isSchedule
+                      ? "transparent"
+                      : "gray.200"
+                  }
+                  _active={{ filter: "brightness(1.2)" }}
+                  _hover={{
+                    filter: "brightness(.8)",
+                    cursor: `${
+                      time.isSchedule && time.isSchedule
+                        ? "pointer"
+                        : "not-allowed"
+                    }`,
+                    bg: "blue.50",
+                    boxShadow: "lg",
+                  }}
                 >
-                  {item}
+                  {time.duration}
                 </GridItem>
               ))}
             </Grid>
@@ -84,15 +161,21 @@ export const StepTwo = () => {
               fontWeight="bold"
               marginTop="10px"
               boxShadow="sm"
+              minH="35px"
             >
-              Você escolheu
-              <Text color="yellow" fontWeight="bold" margin="0 5px">
-                21/01/2021
-              </Text>
-              das
-              <Text color="yellow" fontWeight="bold" margin="0 5px">
-                10:00-10:30
-              </Text>
+              {day && (
+                <>
+                  Você escolheu
+                  <Text color="yellow" fontWeight="bold" margin="0 5px">
+                    {day}
+                  </Text>
+                  {selectedTime.duration && "das"}
+                  <Text color="yellow" fontWeight="bold" margin="0 5px">
+                    {/* 10:00-10:30 */}
+                    {selectedTime.duration && selectedTime.duration}
+                  </Text>
+                </>
+              )}
             </Flex>
           </Flex>
           <VStack>
@@ -106,7 +189,7 @@ export const StepTwo = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              onClick={() => history.push("/step3")}
+              onClick={() => handleSteTwo()}
             >
               CONTINUAR
               <ChevronRightIcon

@@ -10,8 +10,7 @@ import { api } from "../../services/api";
 
 interface ITimeContext {
   times: ITime[];
-  searchedTimes: ITime[];
-  searchTimes: (query: ITimeQuery) => Promise<void>;
+  searchTimes: ({ day, profId }: ITimeQuery) => Promise<void>;
 }
 
 const TimeContext = createContext<ITimeContext>({} as ITimeContext);
@@ -28,7 +27,6 @@ const useTime = () => {
 
 const TimeProvider = ({ children }: IChildren) => {
   const [times, setTimes] = useState<ITime[]>([]);
-  const [searchedTimes, setSearchedTimes] = useState<ITime[]>([]);
 
   const getTimes = useCallback(async () => {
     try {
@@ -39,23 +37,35 @@ const TimeProvider = ({ children }: IChildren) => {
     }
   }, []);
 
-  const searchTimes = useCallback(async ({ prof, day }: ITimeQuery) => {
-    try {
-      const response = await api.get(`/times/search?prof=${prof}&day=${day}`);
-      setSearchedTimes(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const searchTimes = useCallback(
+    async ({ day, profId }: ITimeQuery) => {
+      try {
+        const response = await api.get(
+          `/times/search?day=${day}&profId=${profId}`
+        );
+
+        times.forEach((time) => {
+          if (response.data.find((rs: ITime) => rs.id === time.id)) {
+            return (time.isSchedule = true);
+          } else {
+            return (time.isSchedule = false);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [times]
+  );
 
   useEffect(() => {
     getTimes();
   }, []);
 
-  console.log(times);
+  // console.log(times);
 
   return (
-    <TimeContext.Provider value={{ times, searchedTimes, searchTimes }}>
+    <TimeContext.Provider value={{ times, searchTimes }}>
       {children}
     </TimeContext.Provider>
   );

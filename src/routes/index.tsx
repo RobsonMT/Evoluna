@@ -8,8 +8,8 @@ export const Routes = () => (
   <AnimatePresence>
     <Switch>
       <Route exact path="/" component={StepOne} />
-      <Route path="/step2" component={StepTwo} />
-      <Route path="/step3" component={StepThree} />
+      <Route path="/stepTwo" component={StepTwo} />
+      <Route path="/stepThree" component={StepThree} />
     </Switch>
   </AnimatePresence>
 );

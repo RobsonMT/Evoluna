@@ -1,9 +1,11 @@
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { IChildren } from "../../interfaces";
 import { api } from "../../services/api";
 import { ICreateSchedule } from "../../interfaces";
 
 interface IScheduleContext {
+  scheduleState: ICreateSchedule;
+  setScheduleState: React.Dispatch<React.SetStateAction<ICreateSchedule>>;
   addSchedule: (data: ICreateSchedule) => Promise<void>;
 }
 
@@ -20,6 +22,10 @@ const useSchedule = () => {
 };
 
 const ScheduleProvider = ({ children }: IChildren) => {
+  const [scheduleState, setScheduleState] = useState<ICreateSchedule>(
+    {} as ICreateSchedule
+  );
+
   const addSchedule = useCallback(async (data: ICreateSchedule) => {
     try {
       await api.post("/schedule", { data });
@@ -29,7 +35,9 @@ const ScheduleProvider = ({ children }: IChildren) => {
   }, []);
 
   return (
-    <ScheduleContext.Provider value={{ addSchedule }}>
+    <ScheduleContext.Provider
+      value={{ scheduleState, setScheduleState, addSchedule }}
+    >
       {children}
     </ScheduleContext.Provider>
   );

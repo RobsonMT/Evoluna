@@ -1,8 +1,10 @@
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { IChildren, ICreateClient } from "../../interfaces";
 import { api } from "../../services/api";
 
 interface IClientContext {
+  clientState: ICreateClient;
+  setClientState: React.Dispatch<React.SetStateAction<ICreateClient>>;
   addClient: (data: ICreateClient) => Promise<void>;
 }
 
@@ -19,6 +21,9 @@ const useClient = () => {
 };
 
 const ClientProvider = ({ children }: IChildren) => {
+  const [clientState, setClientState] = useState<ICreateClient>(
+    {} as ICreateClient
+  );
   const addClient = useCallback(async (data: ICreateClient) => {
     try {
       await api.post("/client", { data });
@@ -28,7 +33,7 @@ const ClientProvider = ({ children }: IChildren) => {
   }, []);
 
   return (
-    <ClientContext.Provider value={{ addClient }}>
+    <ClientContext.Provider value={{ clientState, setClientState, addClient }}>
       {children}
     </ClientContext.Provider>
   );

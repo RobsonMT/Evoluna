@@ -63,6 +63,9 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         <ChakraInput
           name={name}
           bg="gray.50"
+          h="35px"
+          p="0px 25px"
+          fontSize={["sm", "md"]}
           borderRadius="20px"
           boxShadow="md"
           color={inputVariation[variation]}
@@ -71,7 +74,6 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           onBlurCapture={handleInputBlur}
           onChangeCapture={(e) => setValue(e.currentTarget.value)}
           size="lg"
-          h="35px"
           variant="outline"
           _hover={{ bgColor: "gray.100" }}
           _placeholder={{ color: "gray.300" }}

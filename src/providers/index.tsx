@@ -4,6 +4,7 @@ import { theme } from "../styles/theme";
 import { ClientProvider } from "./client";
 import { FormOfServiceProvider } from "./formOfService";
 import { ProfessionalProvider } from "./professional";
+import { ScheduleProvider } from "./schedule";
 import { TimeProvider } from "./time";
 
 interface AppProviderProps {
@@ -15,9 +16,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     <FormOfServiceProvider>
       <TimeProvider>
         <ProfessionalProvider>
-          <ClientProvider>
-            <ChakraProvider theme={theme}>{children}</ChakraProvider>
-          </ClientProvider>
+          <ScheduleProvider>
+            <ClientProvider>
+              <ChakraProvider theme={theme}>{children}</ChakraProvider>
+            </ClientProvider>
+          </ScheduleProvider>
         </ProfessionalProvider>
       </TimeProvider>
     </FormOfServiceProvider>
