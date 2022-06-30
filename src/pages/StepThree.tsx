@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Flex,
+  FormErrorMessage,
   Grid,
   Heading,
   Text,
@@ -18,31 +19,91 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "../components/Input";
+import {
+  birthDateRegex,
+  cpfRegex,
+  phoneRegex,
+  timeAMPMRegex,
+} from "../validations";
+import { useTime } from "../providers/time";
+import { useClient } from "../providers/client";
+import { useSchedule } from "../providers/schedule";
+import { useFormOfService } from "../providers/formOfService";
+import { useProfessional } from "../providers/professional";
+import { ICreateClient, ICreateSchedule } from "../interfaces";
 
-const signUpSchema = yup.object().shape({
-  name: yup.string().required("Nome obrigatório"),
+type TStepThreeData = Omit<ICreateClient, "email">;
+
+const createClientSchema = yup.object().shape({
+  fullName: yup
+    .string()
+    .max(50, "Must have a maximum of 50 characters")
+    .required(),
+  contact: yup
+    .string()
+    .matches(
+      phoneRegex,
+      "Phone number format is not valid. EX: (99) 99999-9999"
+    )
+    .required(),
+  cpf: yup
+    .string()
+    .matches(cpfRegex, "Cpf number format is not valid. EX: 000.000.000-00")
+    .required(),
+  birthDate: yup
+    .string()
+    .matches(birthDateRegex, "BirthDate format is not valid. EX: 12/12/2012")
+    .required(),
+  timeOfBirth: yup
+    .string()
+    .matches(
+      timeAMPMRegex,
+      "BirthDate format is not valid. EX: 03:00 AM | 03:00 PM"
+    )
+    .required(),
+  question: yup.string().required(),
+  birthCity: yup.string().required(),
+  lastBirthdayCity: yup.string().required(),
 });
-
-interface IData {
-  name: string;
-}
 
 export const StepThree = () => {
   const history = useHistory();
 
+  const { times, searchTimes } = useTime();
+  const { clientState, setClientState, addClient } = useClient();
+  const { scheduleState, setScheduleState, addSchedule } = useSchedule();
+  const { formsOfService } = useFormOfService();
+  const { professionals } = useProfessional();
+
   const {
     formState: { errors },
+    reset,
     register,
     handleSubmit,
-  } = useForm<IData>({
-    resolver: yupResolver(signUpSchema),
+  } = useForm<TStepThreeData>({
+    resolver: yupResolver(createClientSchema),
   });
+
+  const handleStepOne = (data: TStepThreeData) => {
+    addClient({ ...clientState, ...data }).then((client) => {
+      addSchedule({ ...scheduleState, clientId: client.id })
+        .then(() => {
+          setClientState({} as ICreateClient);
+          setScheduleState({} as ICreateSchedule);
+          reset();
+          history.push("/");
+        })
+        .catch((err) => console.log(err));
+    });
+  };
   return (
     <MotionContainer>
       <Header />
       <Grid minH="100vh" justifyItems="center" alignItems="center">
         <Steps />
         <Flex
+          as="form"
+          onSubmit={handleSubmit(handleStepOne)}
           flexDir="column"
           gap="20px"
           mt="20px"
@@ -82,11 +143,11 @@ export const StepThree = () => {
             <VStack mt="10px" p="20px 0px">
               <Box>
                 <Input
-                  placeholder="Digite seu Nome"
+                  placeholder="Digite seu whatsapp"
                   type="text"
                   label="Whatsap de contato"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.contact}
+                  {...register("contact")}
                 />
                 <Text fontSize="xs">
                   A astrólogia entrará em contato por esse número
@@ -97,8 +158,8 @@ export const StepThree = () => {
                   placeholder="Digite seu Nome"
                   type="text"
                   label="Nome completo"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.fullName}
+                  {...register("fullName")}
                 />
               </Box>
               <Box>
@@ -106,8 +167,8 @@ export const StepThree = () => {
                   placeholder="Digite seu CPF"
                   type="text"
                   label="CPF"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.cpf}
+                  {...register("cpf")}
                 />
               </Box>
               <Box>
@@ -115,8 +176,8 @@ export const StepThree = () => {
                   placeholder="dd/mm/aaaa"
                   type="text"
                   label="Data de nascimento"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.birthDate}
+                  {...register("birthDate")}
                 />
               </Box>
               <Box>
@@ -124,8 +185,8 @@ export const StepThree = () => {
                   placeholder="ex: 2 PM"
                   type="text"
                   label="Horário do nascimento"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.timeOfBirth}
+                  {...register("timeOfBirth")}
                 />
               </Box>
               <Box
@@ -147,8 +208,8 @@ export const StepThree = () => {
                   placeholder="ex: São Paulo - SP"
                   type="text"
                   label="Cidade e estado onde nasceu"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.birthCity}
+                  {...register("birthCity")}
                 />
               </Box>
               <Box>
@@ -159,8 +220,8 @@ export const StepThree = () => {
                 <Input
                   placeholder="ex: São Paulo - SP"
                   type="text"
-                  error={errors.name}
-                  {...register("name")}
+                  error={errors.lastBirthdayCity}
+                  {...register("lastBirthdayCity")}
                 />
               </Box>
               <Box>
@@ -171,10 +232,17 @@ export const StepThree = () => {
                 <Textarea
                   isInvalid
                   rows={5}
-                  // placeholder="Digite sua pergunta"
+                  placeholder="Digite sua pergunta"
                   bg="white"
+                  color="black"
                   boxShadow="lg"
+                  {...register("question")}
                 />
+                {!!errors.question && (
+                  <FormErrorMessage color="red">
+                    {errors.question.message}
+                  </FormErrorMessage>
+                )}
               </Box>
               <Box
                 textAlign={["justify", "justify", "center", "center"]}
@@ -205,7 +273,8 @@ export const StepThree = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              onClick={() => history.push("/step2")}
+              // onClick={() => history.push("/step2")}
+              type="submit"
             >
               FINALIZAR
               <ChevronRightIcon

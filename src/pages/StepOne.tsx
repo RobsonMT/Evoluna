@@ -41,7 +41,6 @@ const emailSchema = yup.object().shape({
 export const StepOne = () => {
   const history = useHistory();
 
-  // const { times, searchedTimes } = useTime();
   const { clientState, setClientState } = useClient();
   const { scheduleState, setScheduleState } = useSchedule();
   const { formsOfService } = useFormOfService();

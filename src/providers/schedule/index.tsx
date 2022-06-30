@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useState } from "react";
 import { IChildren } from "../../interfaces";
 import { api } from "../../services/api";
 import { ICreateSchedule } from "../../interfaces";
+import { toast } from "react-toastify";
 
 interface IScheduleContext {
   scheduleState: ICreateSchedule;
@@ -28,8 +29,12 @@ const ScheduleProvider = ({ children }: IChildren) => {
 
   const addSchedule = useCallback(async (data: ICreateSchedule) => {
     try {
-      await api.post("/schedule", { data });
-    } catch (error) {
+      await api.post("/schedule", data);
+
+      toast.success(
+        `Agendamento confirmado. Foi enviado um e-mail com mais informaçôes.`
+      );
+    } catch (error: any) {
       console.log(error);
     }
   }, []);

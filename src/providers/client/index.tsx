@@ -1,11 +1,12 @@
 import { createContext, useCallback, useContext, useState } from "react";
-import { IChildren, ICreateClient } from "../../interfaces";
+import { toast } from "react-toastify";
+import { IChildren, IClient, ICreateClient } from "../../interfaces";
 import { api } from "../../services/api";
 
 interface IClientContext {
   clientState: ICreateClient;
   setClientState: React.Dispatch<React.SetStateAction<ICreateClient>>;
-  addClient: (data: ICreateClient) => Promise<void>;
+  addClient: (data: ICreateClient) => Promise<IClient>;
 }
 
 const ClientContext = createContext<IClientContext>({} as IClientContext);
@@ -24,11 +25,22 @@ const ClientProvider = ({ children }: IChildren) => {
   const [clientState, setClientState] = useState<ICreateClient>(
     {} as ICreateClient
   );
+
   const addClient = useCallback(async (data: ICreateClient) => {
     try {
-      await api.post("/client", { data });
-    } catch (error) {
-      console.log(error);
+      const response = await api.post("/client", data);
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.data.error.includes("(email)")) {
+          toast.error("E-mail já cadastrado!");
+        } else if (error.response.data.error.includes("(contact)")) {
+          toast.error("Contato já cadastrado!");
+        } else if (error.response.data.error.includes("(cpf)"))
+          toast.error("CPF já cadastrado!");
+      } else {
+        console.log(error);
+      }
     }
   }, []);
 
