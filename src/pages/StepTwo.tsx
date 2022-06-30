@@ -14,19 +14,11 @@ import { DatePicker } from "chakra-ui-date-input";
 import { theme } from "../styles/theme";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
-import { useFormOfService } from "../providers/formOfService";
-import { useClient } from "../providers/client";
-import { useProfessional } from "../providers/professional";
 import { useSchedule } from "../providers/schedule";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useTime } from "../providers/time";
 import { ITime } from "../interfaces";
-
-interface IStepTwoData {
-  day: string;
-  profId: string;
-}
 
 export const StepTwo = () => {
   const [day, setDay] = useState<string>("");
@@ -38,10 +30,7 @@ export const StepTwo = () => {
   const history = useHistory();
 
   const { times, searchTimes } = useTime();
-  const { clientState, setClientState } = useClient();
   const { scheduleState, setScheduleState } = useSchedule();
-  const { formsOfService } = useFormOfService();
-  const { professionals } = useProfessional();
 
   const handleSearch = (data: string) => {
     const searchData = { day: data, profId: scheduleState.professionalId };
@@ -85,7 +74,6 @@ export const StepTwo = () => {
           padding={["20px 40px", "20px 40px", "20px", "20px"]}
           w={["100%", "100%", "50%", "50%"]}
           maxW={["100%", "100%", "500px", "500px"]}
-          // border="2px solid #ccc"
         >
           <Heading as="h3" fontSize="md" textAlign="center">
             Escolha a data disponivel para o seu atendimento
@@ -171,7 +159,6 @@ export const StepTwo = () => {
                   </Text>
                   {selectedTime.duration && "das"}
                   <Text color="yellow" fontWeight="bold" margin="0 5px">
-                    {/* 10:00-10:30 */}
                     {selectedTime.duration && selectedTime.duration}
                   </Text>
                 </>

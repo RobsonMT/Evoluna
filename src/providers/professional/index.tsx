@@ -44,8 +44,6 @@ const ProfessionalProvider = ({ children }: IChildren) => {
     getProfessionals();
   }, []);
 
-  // console.log(professionals);
-
   return (
     <ProfessionalContext.Provider value={{ professionals }}>
       {children}

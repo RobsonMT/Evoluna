@@ -25,11 +25,8 @@ import {
   phoneRegex,
   timeAMPMRegex,
 } from "../validations";
-import { useTime } from "../providers/time";
 import { useClient } from "../providers/client";
 import { useSchedule } from "../providers/schedule";
-import { useFormOfService } from "../providers/formOfService";
-import { useProfessional } from "../providers/professional";
 import { ICreateClient, ICreateSchedule } from "../interfaces";
 
 type TStepThreeData = Omit<ICreateClient, "email">;
@@ -69,11 +66,8 @@ const createClientSchema = yup.object().shape({
 export const StepThree = () => {
   const history = useHistory();
 
-  const { times, searchTimes } = useTime();
   const { clientState, setClientState, addClient } = useClient();
   const { scheduleState, setScheduleState, addSchedule } = useSchedule();
-  const { formsOfService } = useFormOfService();
-  const { professionals } = useProfessional();
 
   const {
     formState: { errors },
@@ -110,7 +104,6 @@ export const StepThree = () => {
           padding={["20px 40px", "20px 40px", "20px", "20px"]}
           w={["100%", "100%", "50%", "50%"]}
           maxW={["100%", "100%", "500px", "500px"]}
-          // border="2px solid #ccc"
         >
           <Heading as="h3" fontSize="md" textAlign="center">
             Preencha os dados para finalizar o seu agendamento
@@ -273,7 +266,6 @@ export const StepThree = () => {
               justifyContent="space-spaceBetween"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              // onClick={() => history.push("/step2")}
               type="submit"
             >
               FINALIZAR

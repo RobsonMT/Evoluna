@@ -20,7 +20,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "../components/Input";
 import { useClient } from "../providers/client";
-import { useEffect } from "react";
 import { useSchedule } from "../providers/schedule";
 
 interface IStepOneData {
@@ -41,8 +40,8 @@ const emailSchema = yup.object().shape({
 export const StepOne = () => {
   const history = useHistory();
 
-  const { clientState, setClientState } = useClient();
-  const { scheduleState, setScheduleState } = useSchedule();
+  const { setClientState } = useClient();
+  const { setScheduleState } = useSchedule();
   const { formsOfService } = useFormOfService();
   const { professionals } = useProfessional();
 
@@ -72,10 +71,6 @@ export const StepOne = () => {
       return history.push("/stepTwo");
     }
   };
-
-  // useEffect(() => {
-  //   console.log(clientState, "atualizando");
-  // });
 
   return (
     <MotionContainer>
