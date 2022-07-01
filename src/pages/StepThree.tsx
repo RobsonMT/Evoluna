@@ -58,7 +58,7 @@ const createClientSchema = yup.object().shape({
       "BirthDate format is not valid. EX: 03:00 AM | 03:00 PM"
     )
     .required(),
-  question: yup.string().required(),
+  question: yup.string().optional().nullable(),
   birthCity: yup.string().required(),
   lastBirthdayCity: yup.string().required(),
 });
@@ -78,9 +78,9 @@ export const StepThree = () => {
     resolver: yupResolver(createClientSchema),
   });
 
-  const handleStepOne = (data: TStepThreeData) => {
-    addClient({ ...clientState, ...data }).then((client) => {
-      addSchedule({ ...scheduleState, clientId: client.id })
+  const handleStepOne = async (data: TStepThreeData) => {
+    await addClient({ ...clientState, ...data }).then(async (client) => {
+      await addSchedule({ ...scheduleState, clientId: client.id })
         .then(() => {
           setClientState({} as ICreateClient);
           setScheduleState({} as ICreateSchedule);

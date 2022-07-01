@@ -16,7 +16,6 @@ import { ChevronRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { useSchedule } from "../providers/schedule";
 import { useState } from "react";
-import { useEffect } from "react";
 import { useTime } from "../providers/time";
 import { ITime } from "../interfaces";
 
@@ -29,7 +28,7 @@ export const StepTwo = () => {
 
   const history = useHistory();
 
-  const { times, searchTimes } = useTime();
+  const { times, searchedTimes, searchTimes } = useTime();
   const { scheduleState, setScheduleState } = useSchedule();
 
   const handleSearch = (data: string) => {
@@ -37,8 +36,12 @@ export const StepTwo = () => {
     searchTimes(searchData).then(() => setDay(data));
   };
 
+  const isAvailable = (time: ITime) => {
+    return searchedTimes && searchedTimes.find((t) => t.id === time.id);
+  };
+
   const handleSelectedTime = (time: ITime) => {
-    if (time.isSchedule && time.isSchedule) {
+    if (isAvailable(time)) {
       setSelectedTime(time);
     }
   };
@@ -54,13 +57,6 @@ export const StepTwo = () => {
       history.push("/stepThree");
     }
   };
-
-  useEffect(() => {
-    console.log(day);
-    console.log(searchTimes, "searchTimes");
-    console.log(times, "times");
-    console.log(scheduleState, "scheduleState atual");
-  });
 
   return (
     <MotionContainer>
@@ -80,7 +76,6 @@ export const StepTwo = () => {
           </Heading>
 
           <DatePicker
-            placeholder="Date picker placeholder"
             name="date"
             onChange={(date: string) => handleSearch(date)}
             textAlign="center"
@@ -99,7 +94,6 @@ export const StepTwo = () => {
             </Heading>
 
             <Grid
-              border="2px solid black"
               gap="20px"
               padding={["5px, 5px", "5px 10px", "5px 10px"]}
               gridTemplateColumns={["repeat(auto-fill, minmax(100px, 1fr))"]}
@@ -116,21 +110,12 @@ export const StepTwo = () => {
                   boxShadow="md"
                   transition="filter .4s linear "
                   onClick={() => handleSelectedTime(time)}
-                  opacity={time.isSchedule && time.isSchedule ? "1" : "0.7"}
-                  bg={
-                    time.isSchedule && time.isSchedule
-                      ? "transparent"
-                      : "gray.200"
-                  }
+                  bg={isAvailable(time) ? "transparent" : "gray.200"}
                   _active={{ filter: "brightness(1.2)" }}
                   _hover={{
-                    filter: "brightness(.8)",
-                    cursor: `${
-                      time.isSchedule && time.isSchedule
-                        ? "pointer"
-                        : "not-allowed"
-                    }`,
-                    bg: "blue.50",
+                    filter: "brightness(.9)",
+                    cursor: `${isAvailable(time) ? "pointer" : "not-allowed"}`,
+                    bg: `${isAvailable(time) && theme.colors.blue[50]}`,
                     boxShadow: "lg",
                   }}
                 >
