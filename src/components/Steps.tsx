@@ -1,8 +1,19 @@
-import { Center, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Center,
+  Heading,
+  HStack,
+  Text,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react";
 
-export const Steps = () => {
+interface IStepsProps {
+  step: number;
+}
+
+export const Steps = ({ step }: IStepsProps) => {
   return (
-    <VStack spacing={8} marginTop="20px">
+    <VStack spacing={8}>
       <Heading
         fontSize="xl"
         textTransform="uppercase"
@@ -14,29 +25,36 @@ export const Steps = () => {
       <HStack spacing={10} display={"flex"} justifyContent="center">
         <VStack textAlign="center">
           <Center
+            bg={step === 1 ? "pink" : "white"}
+            color={step === 1 ? "white" : "pink"}
             fontSize="3xl"
             textShadow="lg"
             fontWeight="bold"
-            bg="whiteSmoke"
-            color="pink"
             borderRadius="50%"
             w="60px"
             h="60px"
-            boxShadow={"0px 0px 5px rgba(0,0,0,0.5)"}
+            boxShadow={useColorModeValue(
+              "0px 0px 5px rgba(0,0,0,0.5)",
+              "0px 0px 5px rgba(255,255,255,0.5)"
+            )}
           >
             1
           </Center>
-          <Text fontSize="xs" fontWeight={"bold"}>
+          <Text
+            color={useColorModeValue("gray.800", "white")}
+            fontSize="xs"
+            fontWeight={"bold"}
+          >
             Validar sua compra
           </Text>
         </VStack>
         <VStack textAlign="center">
           <Center
+            bg={step === 1 ? "gray.200" : step === 2 ? "pink" : "white"}
+            color={step === 1 ? "gray.800" : step === 2 ? "white" : "pink"}
             fontSize="3xl"
             textShadow="lg"
             fontWeight="bold"
-            bg="pink"
-            color="whiteSmoke"
             borderRadius="50%"
             w="60px"
             h="60px"
@@ -44,17 +62,21 @@ export const Steps = () => {
           >
             2
           </Center>
-          <Text fontSize="xs" fontWeight={"bold"}>
+          <Text
+            color={useColorModeValue("gray.800", "white")}
+            fontSize="xs"
+            fontWeight={"bold"}
+          >
             Selecione a Data
           </Text>
         </VStack>
         <VStack textAlign="center">
           <Center
+            bg={step === 3 ? "pink" : "gray.200"}
+            color={step === 3 ? "white" : "gray.800"}
             fontSize="3xl"
             textShadow="lg"
             fontWeight="bold"
-            bg="gray.200"
-            color="gray.800"
             borderRadius="50%"
             w="60px"
             h="60px"
@@ -62,7 +84,11 @@ export const Steps = () => {
           >
             3
           </Center>
-          <Text fontSize="xs" fontWeight={"bold"}>
+          <Text
+            color={useColorModeValue("gray.800", "white")}
+            fontSize="xs"
+            fontWeight={"bold"}
+          >
             Conferir e Finalizar
           </Text>
         </VStack>

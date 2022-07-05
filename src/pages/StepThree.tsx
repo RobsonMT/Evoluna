@@ -1,67 +1,28 @@
 import { MotionContainer } from "../components/MotionContainer";
+import { ICreateClient, ICreateSchedule } from "../interfaces";
+import { Header } from "../components/Header";
+import { Steps } from "../components/Steps";
+import { useHistory } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Input } from "../components/Input";
+import { useClient } from "../providers/client";
+import { useSchedule } from "../providers/schedule";
+import { stepThreeSchema } from "../schemas";
+import { Button } from "../components/Button";
 import {
   Box,
-  Button,
   Flex,
   FormErrorMessage,
   Grid,
   Heading,
   Text,
   Textarea,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
-import { Header } from "../components/Header";
-import { Steps } from "../components/Steps";
-import { ChevronRightIcon } from "@chakra-ui/icons";
-import { theme } from "../styles/theme";
-import { useHistory } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "../components/Input";
-import {
-  birthDateRegex,
-  cpfRegex,
-  phoneRegex,
-  timeAMPMRegex,
-} from "../validations";
-import { useClient } from "../providers/client";
-import { useSchedule } from "../providers/schedule";
-import { ICreateClient, ICreateSchedule } from "../interfaces";
 
 type TStepThreeData = Omit<ICreateClient, "email">;
-
-const createClientSchema = yup.object().shape({
-  fullName: yup
-    .string()
-    .max(50, "Must have a maximum of 50 characters")
-    .required(),
-  contact: yup
-    .string()
-    .matches(
-      phoneRegex,
-      "Phone number format is not valid. EX: (99) 99999-9999"
-    )
-    .required(),
-  cpf: yup
-    .string()
-    .matches(cpfRegex, "Cpf number format is not valid. EX: 000.000.000-00")
-    .required(),
-  birthDate: yup
-    .string()
-    .matches(birthDateRegex, "BirthDate format is not valid. EX: 12/12/2012")
-    .required(),
-  timeOfBirth: yup
-    .string()
-    .matches(
-      timeAMPMRegex,
-      "BirthDate format is not valid. EX: 03:00 AM | 03:00 PM"
-    )
-    .required(),
-  question: yup.string().optional().nullable(),
-  birthCity: yup.string().required(),
-  lastBirthdayCity: yup.string().required(),
-});
 
 export const StepThree = () => {
   const history = useHistory();
@@ -75,7 +36,7 @@ export const StepThree = () => {
     register,
     handleSubmit,
   } = useForm<TStepThreeData>({
-    resolver: yupResolver(createClientSchema),
+    resolver: yupResolver(stepThreeSchema),
   });
 
   const handleStepOne = async (data: TStepThreeData) => {
@@ -90,11 +51,19 @@ export const StepThree = () => {
         .catch((err) => console.log(err));
     });
   };
+
   return (
     <MotionContainer>
       <Header />
-      <Grid minH="100vh" justifyItems="center" alignItems="center">
-        <Steps />
+      <Grid
+        minH="calc(100vh - 50px)"
+        justifyItems="center"
+        alignItems="center"
+        bg={useColorModeValue("whitesmoke", "black.300")}
+        transition={"backgroud 1s ease"}
+        transform={"backgroud 1s ease"}
+      >
+        <Steps step={3} />
         <Flex
           as="form"
           onSubmit={handleSubmit(handleStepOne)}
@@ -105,7 +74,12 @@ export const StepThree = () => {
           w={["100%", "100%", "50%", "50%"]}
           maxW={["100%", "100%", "500px", "500px"]}
         >
-          <Heading as="h3" fontSize="md" textAlign="center">
+          <Heading
+            as="h3"
+            color={useColorModeValue("gray.800", "whitesmoke")}
+            fontSize="lg"
+            textAlign="center"
+          >
             Preencha os dados para finalizar o seu agendamento
           </Heading>
 
@@ -114,31 +88,34 @@ export const StepThree = () => {
               spacing="5px"
               textAlign="center"
               borderRadius="lg"
-              bg="white"
+              bg={useColorModeValue("LightGrey", "whitesmoke")}
               p="20px 10px"
             >
               <Heading
                 as="h4"
-                fontSize="sm"
+                fontSize="md"
                 textAlign="center"
                 color="blue.800"
                 mb="5px"
               >
                 Instruçôes importantes
               </Heading>
-              <Text color="pink">Peencha o formulário com cuidado!</Text>
-              <Text color="pink">
+              <Text color="gray.800">Peencha o formulário com cuidado!</Text>
+              <Text color="gray.800">
                 Os mapas que apresentarem erros de preenchimento incorreto, não
                 serão refeitos, ou uma taxa será cobrada.
               </Text>
             </VStack>
 
-            <VStack mt="10px" p="20px 0px">
+            <VStack mt="10px" p="20px 0px" spacing={3}>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  Whatsap de contato
+                </Text>
                 <Input
-                  placeholder="Digite seu whatsapp"
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
+                  placeholder="ex: (21) 99999-9999"
                   type="text"
-                  label="Whatsap de contato"
                   error={errors.contact}
                   {...register("contact")}
                 />
@@ -147,46 +124,61 @@ export const StepThree = () => {
                 </Text>
               </Box>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  Nome completo
+                </Text>
                 <Input
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
                   placeholder="Digite seu Nome"
                   type="text"
-                  label="Nome completo"
                   error={errors.fullName}
                   {...register("fullName")}
                 />
               </Box>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  CPF
+                </Text>
                 <Input
-                  placeholder="Digite seu CPF"
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
+                  placeholder="ex: 000.000.000-00"
                   type="text"
-                  label="CPF"
                   error={errors.cpf}
                   {...register("cpf")}
                 />
               </Box>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  Data de nascimento
+                </Text>
                 <Input
-                  placeholder="dd/mm/aaaa"
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
+                  placeholder="ex: dd/mm/aaaa"
                   type="text"
-                  label="Data de nascimento"
                   error={errors.birthDate}
                   {...register("birthDate")}
                 />
               </Box>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  Horário do nascimento
+                </Text>
                 <Input
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
                   placeholder="ex: 2 PM"
                   type="text"
-                  label="Horário do nascimento"
                   error={errors.timeOfBirth}
                   {...register("timeOfBirth")}
                 />
               </Box>
               <Box
                 textAlign={["justify", "justify", "center", "center"]}
-                border={`2px solid ${theme.colors.purple[800]}`}
+                bg={useColorModeValue("LightGrey", "whitesmoke")}
+                color="gray.800"
+                borderRadius="lg"
                 p="10px"
                 boxShadow="md"
+                margin="50px 0px"
               >
                 Coloque sempre AM ou PM no seu horário de nascimento. Se seu
                 horário de nascimento for próximo do meio da tarde, coloque AM.
@@ -197,20 +189,28 @@ export const StepThree = () => {
                 retire a hora porque o sistema calculará automaticamente..
               </Box>
               <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  Cidade e estado onde nasceu
+                </Text>
                 <Input
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
                   placeholder="ex: São Paulo - SP"
                   type="text"
-                  label="Cidade e estado onde nasceu"
                   error={errors.birthCity}
                   {...register("birthCity")}
                 />
               </Box>
               <Box>
-                <Text>
-                  Cidade e estado onde estav no ultimo aniversário ou que stará
-                  no próximo se estiver perto da data do aniversário
+                <Text
+                  fontSize="sm"
+                  fontWeight="bold"
+                  color={useColorModeValue("gray.800", "whitesmoke")}
+                >
+                  Cidade e estado onde estava no ultimo aniversário ou que stará
+                  no próximo se estiver perto da data do aniversário.
                 </Text>
                 <Input
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
                   placeholder="ex: São Paulo - SP"
                   type="text"
                   error={errors.lastBirthdayCity}
@@ -218,17 +218,24 @@ export const StepThree = () => {
                 />
               </Box>
               <Box>
-                <Text>
+                <Text
+                  fontSize="sm"
+                  fontWeight="bold"
+                  color={useColorModeValue("gray.800", "whitesmoke")}
+                >
                   Quer fazer pergunta ao astrólogo? se sim, coloque tudo que
                   quer saber aqui em baixo.
                 </Text>
                 <Textarea
+                  bg={useColorModeValue("whitesmoke", "gray.800")}
                   isInvalid
                   rows={5}
                   placeholder="Digite sua pergunta"
-                  bg="white"
                   color="black"
-                  boxShadow="lg"
+                  borderRadius="20px"
+                  boxShadow="md"
+                  border="1px solid"
+                  borderColor="gray.300"
                   {...register("question")}
                 />
                 {!!errors.question && (
@@ -239,16 +246,18 @@ export const StepThree = () => {
               </Box>
               <Box
                 textAlign={["justify", "justify", "center", "center"]}
-                border={`2px solid ${theme.colors.purple[800]}`}
+                bg={useColorModeValue("LightGrey", "whitesmoke")}
+                color="gray.800"
+                borderRadius="lg"
                 boxShadow="md"
                 p="10px"
               >
-                <Text>
+                <Text fontSize="md">
                   O astrólogo entrará em contato com você próximo a data de
                   entrega, lembrando que o prazo para você receber o mapa astral
                   é de até 20 dias.
                 </Text>
-                <Text>
+                <Text fontSize="md">
                   NÃO ESQUEÇA de salvar seu mapa em um local seguro assim que
                   recebê-lo, porque não temos a cópia dele.
                 </Text>
@@ -257,28 +266,21 @@ export const StepThree = () => {
           </Flex>
           <VStack>
             <Button
-              bg="pink"
-              borderRadius="15px"
-              border="2px solid"
-              color="gray.200"
-              h="30px"
+              model="primary"
               display="flex"
-              justifyContent="space-spaceBetween"
+              justifyContent="space-between"
               alignItems="center"
               padding="5px 5px 5px 30px"
               type="submit"
             >
               FINALIZAR
-              <ChevronRightIcon
-                h="20px"
-                w="20px"
-                color="purple.800"
-                border={`2px solid ${theme.colors.purple[800]}`}
-                borderRadius="50%"
-                marginLeft="10px"
-              />
             </Button>
-            <Text textAlign="center" fontSize="md">
+            <Text
+              textAlign="center"
+              fontSize="sm"
+              fontWeight="bold"
+              color={useColorModeValue("gray.800", "whitesmoke")}
+            >
               Você receberá um e-mail com os dados do seu agendamento.
             </Text>
           </VStack>

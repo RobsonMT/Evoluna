@@ -1,3 +1,5 @@
+import { IChildren, IFormOfService } from "../../interfaces";
+import { api } from "../../services/api";
 import {
   createContext,
   useCallback,
@@ -5,8 +7,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { IChildren, IFormOfService } from "../../interfaces";
-import { api } from "../../services/api";
 
 interface IFormOfServiceContext {
   formsOfService: IFormOfService[];

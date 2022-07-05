@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { FieldError } from "react-hook-form";
 import { IconType } from "react-icons/lib";
 
-interface InputProps extends ChakraInputProps {
+interface IInputProps extends ChakraInputProps {
   label?: string;
   icon?: IconType;
   name: string;
@@ -24,7 +24,7 @@ const inputVariation: inputVariationOptions = {
   filled: "green.500",
 };
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
+const InputBase: ForwardRefRenderFunction<HTMLInputElement, IInputProps> = (
   { label, icon: Icon, name, error = null, ...rest },
   ref
 ) => {
@@ -62,12 +62,12 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         )}
         <ChakraInput
           name={name}
-          bg="gray.50"
           h="35px"
           p="0px 25px"
           fontSize={["sm", "md"]}
           borderRadius="20px"
           boxShadow="md"
+          bg="whitesmoke"
           color={inputVariation[variation]}
           borderColor={inputVariation[variation]}
           onFocus={handleInputFocus}
@@ -82,7 +82,9 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           {...rest}
         />
         {!!error && (
-          <FormErrorMessage color="red">{error.message}</FormErrorMessage>
+          <FormErrorMessage color="red" display="flex" justifyContent="center">
+            {error.message}
+          </FormErrorMessage>
         )}
       </InputGroup>
     </FormControl>

@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ThemeProvider, ColorModeProvider, CSSReset } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { theme } from "../styles/theme";
 import { ClientProvider } from "./client";
@@ -18,7 +18,12 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         <ProfessionalProvider>
           <ScheduleProvider>
             <ClientProvider>
-              <ChakraProvider theme={theme}>{children}</ChakraProvider>
+              <ThemeProvider theme={theme}>
+                <ColorModeProvider>
+                  <CSSReset />
+                  {children}
+                </ColorModeProvider>
+              </ThemeProvider>
             </ClientProvider>
           </ScheduleProvider>
         </ProfessionalProvider>

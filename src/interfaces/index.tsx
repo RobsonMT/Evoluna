@@ -14,7 +14,6 @@ export interface IProfessional {
 export interface ITime {
   id: string;
   duration: string;
-  isSchedule?: boolean;
 }
 
 export interface ITimeQuery {

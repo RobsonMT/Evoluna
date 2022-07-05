@@ -1,11 +1,22 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { extendTheme, theme as ChakraTheme } from "@chakra-ui/react";
+import { extendTheme, type ThemeConfig } from "@chakra-ui/react";
+
+const config: ThemeConfig = {
+  initialColorMode: "light",
+  useSystemColorMode: false,
+};
 
 export const theme = extendTheme({
+  config,
+
   colors: {
+    black: {
+      300: "rgb(18, 18, 20)",
+    },
     gray: {
       200: "rgb(179, 182, 185)",
       300: "rgb(172, 166, 166)",
+      700: "rgb(59, 59, 59)",
       800: "rgb(67, 64, 64)",
     },
     red: "#E60000",
@@ -17,7 +28,7 @@ export const theme = extendTheme({
       900: "#f53695",
     },
     pink: "rgb(245, 54, 149)",
-    blue: { 50: "rgb(4, 191, 217)", 800: "rgb(0, 68, 149)" }
+    blue: { 50: "rgb(4, 191, 217)", 800: "rgb(0, 68, 149)" },
   },
   fonts: {
     heading: "'Ubuntu', serif;",
@@ -40,10 +51,7 @@ export const theme = extendTheme({
   },
   styles: {
     global: {
-      body: {
-        bg: "purple.500",
-        color: "white",
-      },
+      body: {},
     },
   },
 });

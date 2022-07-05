@@ -1,39 +1,48 @@
-import {
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 import { MotionContainer } from "../components/MotionContainer";
 import { Header } from "../components/Header";
 import { Steps } from "../components/Steps";
-import { DatePicker } from "chakra-ui-date-input";
 import { theme } from "../styles/theme";
-import { ChevronRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { useSchedule } from "../providers/schedule";
 import { useState } from "react";
 import { useTime } from "../providers/time";
 import { ITime } from "../interfaces";
+import { formatDate, getCurrentDate } from "../utils";
+import { DatePickerWrapper } from "../styles/datePicker";
+import { Button } from "../components/Button";
+import {
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+  useColorMode,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react";
 
 export const StepTwo = () => {
-  const [day, setDay] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<ITime>({
-    id: "",
-    duration: "",
-  });
-
+  const { colorMode } = useColorMode();
+  const colormode = colorMode;
   const history = useHistory();
 
-  const { times, searchedTimes, searchTimes } = useTime();
+  const initialState = { id: "", duration: "" };
+  const [day, setDay] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [selectedTime, setSelectedTime] = useState<ITime>(initialState);
+
+  const { times, searchedTimes, setSearchedTimes, searchTimes } = useTime();
   const { scheduleState, setScheduleState } = useSchedule();
 
-  const handleSearch = (data: string) => {
-    const searchData = { day: data, profId: scheduleState.professionalId };
-    searchTimes(searchData).then(() => setDay(data));
+  const handleSearch = (date: Date) => {
+    setStartDate(date);
+    const searchData = {
+      day: formatDate(date),
+      profId: scheduleState.professionalId,
+    };
+    searchTimes(searchData).then(() => setDay(formatDate(date)));
   };
 
   const isAvailable = (time: ITime) => {
@@ -46,6 +55,13 @@ export const StepTwo = () => {
     }
   };
 
+  const resetOptions = () => {
+    setSelectedTime(initialState);
+    setStartDate(new Date());
+    setSearchedTimes([]);
+    setDay("");
+  };
+
   const handleSteTwo = () => {
     if (day && selectedTime.id) {
       setScheduleState((prev) => ({
@@ -54,15 +70,24 @@ export const StepTwo = () => {
         timeId: selectedTime.id,
       }));
 
-      history.push("/stepThree");
+      resetOptions();
+
+      return history.push("/stepThree");
     }
   };
 
   return (
     <MotionContainer>
       <Header />
-      <Grid minH="100vh" justifyItems="center" alignItems="center">
-        <Steps />
+      <Grid
+        minH="calc(100vh - 50px)"
+        justifyItems="center"
+        alignItems="center"
+        bg={useColorModeValue("whitesmoke", "black.300")}
+        transition={"backgroud 1s ease"}
+        transform={"backgroud 1s ease"}
+      >
+        <Steps step={2} />
         <Flex
           flexDir="column"
           gap="20px"
@@ -72,25 +97,38 @@ export const StepTwo = () => {
           maxW={["100%", "100%", "500px", "500px"]}
         >
           <Heading as="h3" fontSize="md" textAlign="center">
-            Escolha a data disponivel para o seu atendimento
+            Escolha a data disponível para o seu atendimento
           </Heading>
 
-          <DatePicker
-            name="date"
-            onChange={(date: string) => handleSearch(date)}
-            textAlign="center"
-            color="whitesmoke"
-            fontWeight="bold"
-          />
+          <DatePickerWrapper colorMode={colormode}>
+            <DatePicker
+              name="date"
+              selected={startDate}
+              onChange={(date: Date) => handleSearch(date)}
+              dateFormat="dd/MM/yyyy"
+            />
+          </DatePickerWrapper>
 
-          <Flex flexDir="column" bg="white" borderRadius="5px" p="10px">
+          <Heading as="h3" fontSize="md" textAlign="center">
+            Escolha o horário disponível para o seu atendimento
+          </Heading>
+
+          <Flex
+            p="10px"
+            flexDir="column"
+            bg={useColorModeValue("white", "gray.800")}
+            border="1px solid"
+            borderColor={useColorModeValue("gray.200", "gray.800")}
+            borderRadius="5px"
+            boxShadow="md"
+          >
             <Heading
               fontSize="sm"
               textAlign="center"
-              color="purple.800"
+              color={useColorModeValue("gray.800", "whitesmoke")}
               margin="10px 0"
             >
-              21 de janeiro - Sexta-feira
+              {startDate && getCurrentDate(startDate)}
             </Heading>
 
             <Grid
@@ -110,7 +148,7 @@ export const StepTwo = () => {
                   boxShadow="md"
                   transition="filter .4s linear "
                   onClick={() => handleSelectedTime(time)}
-                  bg={isAvailable(time) ? "transparent" : "gray.200"}
+                  bg={isAvailable(time) ? "whitesmoke" : "gray.200"}
                   _active={{ filter: "brightness(1.2)" }}
                   _hover={{
                     filter: "brightness(.9)",
@@ -135,6 +173,7 @@ export const StepTwo = () => {
               marginTop="10px"
               boxShadow="sm"
               minH="35px"
+              color="whitesmoke"
             >
               {day && (
                 <>
@@ -152,35 +191,16 @@ export const StepTwo = () => {
           </Flex>
           <VStack>
             <Button
-              bg="pink"
-              borderRadius="15px"
-              border="2px solid"
-              color="gray.200"
-              h="30px"
+              model="primary"
               display="flex"
-              justifyContent="space-spaceBetween"
+              justifyContent="space-between"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              onClick={() => handleSteTwo()}
+              onClick={handleSteTwo}
             >
               CONTINUAR
-              <ChevronRightIcon
-                h="20px"
-                w="20px"
-                color="purple.800"
-                border={`2px solid ${theme.colors.purple[800]}`}
-                borderRadius="50%"
-                marginLeft="10px"
-              />
             </Button>
-            <Button
-              bg="transparent"
-              borderRadius="15px"
-              border="2px solid"
-              color="gray.200"
-              h="30px"
-              p="5px 30px"
-            >
+            <Button model="outlined" p="5px 30px" onClick={resetOptions}>
               ALTERAR
             </Button>
           </VStack>

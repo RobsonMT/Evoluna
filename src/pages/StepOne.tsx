@@ -1,41 +1,31 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Select,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
 import { MotionContainer } from "../components/MotionContainer";
 import { Steps } from "../components/Steps";
 import { Header } from "../components/Header";
-import { ChevronRightIcon } from "@chakra-ui/icons";
-import { theme } from "../styles/theme";
 import { useHistory } from "react-router-dom";
 import { useFormOfService } from "../providers/formOfService";
 import { useProfessional } from "../providers/professional";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "../components/Input";
 import { useClient } from "../providers/client";
 import { useSchedule } from "../providers/schedule";
+import { stepOneSchema } from "../schemas";
+import { Button } from "../components/Button";
+import {
+  Box,
+  Flex,
+  Grid,
+  Select,
+  Text,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react";
 
 interface IStepOneData {
   email: string;
   formOfServiceId: string;
   professionalId: string;
 }
-
-const emailSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("E-mail inválido")
-    .required("E-mail obrigatório. Ex: nome@email.com."),
-  formOfServiceId: yup.string().required(),
-  professionalId: yup.string().required(),
-});
 
 export const StepOne = () => {
   const history = useHistory();
@@ -51,7 +41,7 @@ export const StepOne = () => {
     handleSubmit,
     reset,
   } = useForm<IStepOneData>({
-    resolver: yupResolver(emailSchema),
+    resolver: yupResolver(stepOneSchema),
   });
 
   const handleStepOne = ({
@@ -68,37 +58,48 @@ export const StepOne = () => {
       }));
       reset();
 
-      return history.push("/stepTwo");
+      history.push("/stepTwo");
     }
   };
 
   return (
     <MotionContainer>
       <Header />
-      <Grid minH="100vh" justifyItems="center" alignItems="center">
-        <Steps />
+      <Grid
+        minH="calc(100vh - 50px)"
+        justifyItems="center"
+        alignItems="center"
+        bg={useColorModeValue("whitesmoke", "black.300")}
+        transition={"backgroud 1s ease"}
+        transform={"backgroud 1s ease"}
+      >
+        <Steps step={1} />
         <Flex
           as="form"
           onSubmit={handleSubmit(handleStepOne)}
           flexDir="column"
           gap="20px"
-          marginTop="20px"
           padding={["20px 40px", "20px 40px", "20px", "20px"]}
           w={["100%", "100%", "50%", "50%"]}
           maxW={["100%", "100%", "500px", "500px"]}
         >
           <Box>
             <Text fontSize="sm" fontWeight="bold" textAlign="center">
-              Você escolheu:
+              Você escolheu
             </Text>
             <Select
               placeholder="Selecione o profissional"
               textAlign="center"
               fontSize={["sm", "md"]}
-              bg="whitesmoke"
-              h="30px"
-              borderRadius="15px"
-              color="pink"
+              bg={useColorModeValue("white", "gray.800")}
+              h="35px"
+              borderRadius="20px"
+              boxShadow="md"
+              color="gray.500"
+              borderColor="gray.300"
+              _hover={{ bgColor: "gray.100" }}
+              _placeholder={{ color: "gray.300" }}
+              _focus={{ bg: "gray.100" }}
               {...register("professionalId")}
             >
               {professionals.map((item, key) => (
@@ -117,10 +118,16 @@ export const StepOne = () => {
               placeholder="Selecione a forma de atendimento"
               textAlign="center"
               fontSize={["sm", "md"]}
-              bg="whitesmoke"
-              h="30px"
-              borderRadius="15px"
-              color="pink"
+              bg={useColorModeValue("white", "gray.800")}
+              h="35px"
+              borderRadius="20px"
+              boxShadow="md"
+              color="gray.500"
+              border="1px solid"
+              borderColor="gray.300"
+              _hover={{ bgColor: "gray.100" }}
+              _placeholder={{ color: "gray.300" }}
+              _focus={{ bg: "gray.100" }}
               {...register("formOfServiceId")}
             >
               {formsOfService.map((item, key) => (
@@ -135,6 +142,8 @@ export const StepOne = () => {
               Insira o e-mail utilizado na compra
             </Text>
             <Input
+              bg={useColorModeValue("white", "gray.800")}
+              textAlign="center"
               placeholder="Digite aqui o e-mail"
               _placeholder={{ textAlign: "center" }}
               type="email"
@@ -142,43 +151,19 @@ export const StepOne = () => {
               {...register("email")}
             />
           </Box>
+
           <VStack>
             <Button
-              bg="pink"
-              borderRadius="15px"
-              border="2px solid"
-              color="gray.200"
-              h="30px"
+              model="primary"
               display="flex"
-              justifyContent="space-spaceBetween"
+              justifyContent="space-between"
               alignItems="center"
               padding="5px 5px 5px 30px"
-              transition="filter .1s linear "
-              _hover={{ filter: "brightness(.9)" }}
-              _active={{ filter: "brightness(1.1)" }}
               type="submit"
             >
               CONTINUAR
-              <ChevronRightIcon
-                h="20px"
-                w="20px"
-                color="purple.800"
-                border={`2px solid ${theme.colors.purple[800]}`}
-                borderRadius="50%"
-                marginLeft="10px"
-              />
             </Button>
-            <Button
-              bg="transparent"
-              borderRadius="15px"
-              border="2px solid"
-              color="gray.200"
-              h="30px"
-              p="5px 30px"
-              transition="filter .1s linear "
-              _hover={{ filter: "brightness(.9)" }}
-              _active={{ filter: "brightness(1.1)" }}
-            >
+            <Button model="outlined" p="5px 30px" onClick={() => reset()}>
               ALTERAR
             </Button>
           </VStack>

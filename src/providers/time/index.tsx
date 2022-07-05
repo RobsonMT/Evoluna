@@ -11,6 +11,7 @@ import { api } from "../../services/api";
 interface ITimeContext {
   times: ITime[];
   searchedTimes: ITime[];
+  setSearchedTimes: React.Dispatch<React.SetStateAction<ITime[]>>;
   searchTimes: ({ day, profId }: ITimeQuery) => Promise<void>;
   getTimes: () => Promise<void>;
 }
@@ -56,7 +57,7 @@ const TimeProvider = ({ children }: IChildren) => {
 
   return (
     <TimeContext.Provider
-      value={{ times, searchedTimes, searchTimes, getTimes }}
+      value={{ times, searchedTimes, setSearchedTimes, searchTimes, getTimes }}
     >
       {children}
     </TimeContext.Provider>
